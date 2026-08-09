@@ -183,7 +183,7 @@ citylisting-master/
 
 ## Author
 
-Built as a portfolio project demonstrating product thinking across marketplace discovery, authentication, data modeling, API design, and administrative workflows.
+ODUNSI OLATUNDE OLANREWAJU
 
 ---
 
