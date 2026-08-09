@@ -1,0 +1,385 @@
+<!doctype html>
+<html class="no-js" lang="zxx">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>CityListing </title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="manifest" href="site.webmanifest">
+    <link rel="shortcut icon" type="image/x-icon" href="assets/img/favicon.ico">
+
+    <!-- CSS here -->
+    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/css/owl.carousel.min.css">
+    <link rel="stylesheet" href="assets/css/slicknav.css">
+    <link rel="stylesheet" href="assets/css/flaticon.css">
+    <link rel="stylesheet" href="assets/css/animate.min.css">
+    <link rel="stylesheet" href="assets/css/magnific-popup.css">
+    <link rel="stylesheet" href="assets/css/fontawesome-all.min.css">
+    <link rel="stylesheet" href="assets/css/themify-icons.css">
+    <link rel="stylesheet" href="assets/css/slick.css">
+    <link rel="stylesheet" href="assets/css/nice-select.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/responsive.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        .listing-caption.section-padding2 {
+            padding-top: 80px;
+            padding-bottom: 110px;
+        }
+
+        #provider-details {
+            width: 100%;
+        }
+
+        .listing-caption .container .row.justify-content-center > #provider-details {
+            max-width: 100%;
+            flex: 0 0 100%;
+        }
+
+        #provider-details .provider-details-shell {
+            background: linear-gradient(135deg, #ffffff 0%, #f8fbff 100%);
+            border-radius: 24px;
+            padding: 24px;
+            box-shadow: 0 18px 45px rgba(15, 23, 42, 0.08);
+            border: 1px solid rgba(15, 23, 42, 0.06);
+        }
+
+        #provider-details .provider-details-card {
+            display: flex;
+            flex-direction: column;
+            gap: 22px;
+        }
+
+        #provider-details .provider-contact-card,
+        #provider-details .provider-section {
+            background: #ffffff;
+            border-radius: 18px;
+            padding: 20px 22px;
+            border: 1px solid rgba(15, 23, 42, 0.06);
+            box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04);
+        }
+
+        #provider-details .provider-contact-card p {
+            margin-bottom: 0;
+        }
+
+        #provider-details .provider-contact-card a {
+            color: #0d9488;
+            text-decoration: underline;
+        }
+
+        #provider-details .provider-contact-card a:hover {
+            color: #075b4f;
+        }
+
+        #provider-details .services-offered-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 16px;
+        }
+
+        @media (min-width: 1440px) {
+            #provider-details .services-offered-grid {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+
+            #provider-details .provider-details-shell {
+                padding: 28px;
+            }
+        }
+
+        @media (min-width: 1200px) and (max-width: 1439px) {
+            #provider-details .services-offered-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        #provider-details .service-card {
+            background: linear-gradient(135deg, #ffffff 0%, #f7faff 100%);
+            border: 1px solid rgba(15, 23, 42, 0.08);
+            border-radius: 16px;
+            padding: 18px;
+            min-height: 100%;
+            box-shadow: 0 10px 25px rgba(15, 23, 42, 0.05);
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        #provider-details .service-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 14px 30px rgba(15, 23, 42, 0.08);
+        }
+
+        #provider-details .service-card__title-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+
+        #provider-details .service-card__title-row h5 {
+            margin: 0;
+            font-size: 1rem;
+            color: #0f172a;
+            font-weight: 700;
+        }
+
+        #provider-details .service-card__price {
+            color: #0d9488;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        #provider-details .service-card__description {
+            color: #475569;
+            line-height: 1.7;
+            margin-bottom: 12px;
+        }
+
+        #provider-details .service-card__meta {
+            margin-top: auto;
+        }
+
+        #provider-details .service-card__pill,
+        #provider-details .location-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #ecfeff;
+            color: #0f766e;
+            padding: 7px 10px;
+            border-radius: 999px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        #provider-details .location-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        @media (max-width: 768px) {
+            #provider-details .provider-details-shell {
+                padding: 16px;
+            }
+
+            #provider-details .provider-contact-card,
+            #provider-details .provider-section {
+                padding: 16px;
+            }
+
+            #provider-details .services-offered-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Preloader Start -->
+    <div id="preloader-active">
+        <div class="preloader d-flex align-items-center justify-content-center">
+            <div class="preloader-inner position-relative">
+                <div class="preloader-circle"></div>
+                <div class="preloader-img pere-text">
+                    <img src="assets/img/logo/loder.jpg" alt="">
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Preloader Start -->
+
+    <!-- Rating Modal -->
+    <div id="ratingModal" class="rating-modal-overlay">
+        <div class="rating-modal">
+            <div class="rating-modal-header">
+                <h3>Rate This Provider</h3>
+                <button class="rating-modal-close" onclick="closeRatingModal()">&times;</button>
+            </div>
+            <div class="rating-modal-body">
+                <p class="mb-20">How would you rate this provider?</p>
+                <div class="star-picker" id="starPicker">
+                    <span class="star-option" data-rating="1">★</span>
+                    <span class="star-option" data-rating="2">★</span>
+                    <span class="star-option" data-rating="3">★</span>
+                    <span class="star-option" data-rating="4">★</span>
+                    <span class="star-option" data-rating="5">★</span>
+                </div>
+                <p class="rating-text mt-20 mb-20">Selected: <strong id="selectedRating">0</strong> stars</p>
+                <div class="form-group">
+                    <label for="ratingComment">Comment (optional):</label>
+                    <textarea id="ratingComment" class="form-control" rows="4" placeholder="Share your experience..."></textarea>
+                </div>
+            </div>
+            <div class="rating-modal-footer">
+                <button class="btn btn-secondary" onclick="closeRatingModal()">Cancel</button>
+                <button class="btn btn-primary" id="submitRatingBtn" onclick="submitRating()" disabled>Submit Rating</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="header"></div>
+    <main>
+
+        <!-- Hero Start-->
+        <div id="hero-banner" class="hero-area2  slider-height2 hero-overly2 d-flex align-items-center ">
+            <div class="container">
+                <div class="row">
+                    <div class="col-xl-12">
+                        <div class="hero-cap text-center pt-50">
+                            <h2 id="service_description"></h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--Hero End -->
+        <!-- Listing caption start-->
+        <div class="listing-caption section-padding2">
+            <div class="container">
+                <div class="row justify-content-center">
+
+                    <div class="col-lg-8" id="provider-details">
+
+                        <h3 class="mb-20">
+                            Loading provider...
+                        </h3>
+
+                    </div>
+
+                </div>
+                <!-- Map -->
+                <div class="row justify-content-center">
+                    <div class="col-lg-8">
+                        <h3 class="mb-30">Location</h3>
+                        <div class="d-none d-sm-block mb-30 pb-4">
+                            <div id="map" style="height: 480px; min-height: 320px; position: relative; overflow: hidden; background: #eee; border-radius: 8px;"></div>
+                            <div id="map-message" style="display: none; padding: 16px; background: #f7f7f7; color: #333; border: 1px solid #ddd; border-radius: 8px; margin-top: 16px; text-align: center;"></div>
+                        </div>
+                    </div>
+                </div>
+                <!--End Map -->
+                <!-- Contact From -->
+                <!-- From -->
+                <!-- listing Details Stat-->
+                <div class="listing-details-area">
+                    <div class="container">
+                        <h4 class="mb-4 text-center" style="font-size: 2.5rem; font-weight: 300;">Similar Providers</h4>
+                        <div class="row" id="provider-services-list">
+
+                            <div class="col-12 text-center">
+                                <p>Loading similar providers...</p>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- listing Details End -->
+                </div>
+            </div>
+            <!-- Listing caption End-->
+
+    </main>
+    <div id="footer"></div>
+    <!-- Scroll Up -->
+    <div id="back-top">
+        <a title="Go to Top" href="#"> <i class="fas fa-level-up-alt"></i></a>
+    </div>
+
+
+    <!-- JS here -->
+    <!-- All JS Custom Plugins Link Here here -->
+    <script src="./assets/js/vendor/modernizr-3.5.0.min.js"></script>
+    <!-- Jquery, Popper, Bootstrap -->
+    <script src="./assets/js/vendor/jquery-1.12.4.min.js"></script>
+    <script src="./assets/js/popper.min.js"></script>
+    <script src="./assets/js/bootstrap.min.js"></script>
+    <!-- Jquery Mobile Menu -->
+    <script src="./assets/js/jquery.slicknav.min.js"></script>
+
+    <!-- Jquery Slick , Owl-Carousel Plugins -->
+    <script src="./assets/js/owl.carousel.min.js"></script>
+    <script src="./assets/js/slick.min.js"></script>
+    <!-- One Page, Animated-HeadLin -->
+    <script src="./assets/js/wow.min.js"></script>
+    <script src="./assets/js/animated.headline.js"></script>
+    <script src="./assets/js/jquery.magnific-popup.js"></script>
+
+    <!-- Nice-select, sticky -->
+    <script src="./assets/js/jquery.nice-select.min.js"></script>
+    <script src="./assets/js/jquery.sticky.js"></script>
+
+    <!-- contact js -->
+    <script src="./assets/js/contact.js"></script>
+    <script src="./assets/js/jquery.form.js"></script>
+    <script src="./assets/js/jquery.validate.min.js"></script>
+    <script src="./assets/js/mail-script.js"></script>
+    <script src="./assets/js/jquery.ajaxchimp.min.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <!-- Jquery Plugins, main Jquery -->
+    <script src="./assets/js/plugins.js"></script>
+    <script src="./assets/js/main.js"></script>
+    <script src="Doc/js/config.js"></script>
+    <script src="Doc/js/index.js"></script>
+    <script>
+        function bootstrapHeader() {
+            fetch('header.html')
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById('header').innerHTML = data;
+                    const authPromise = window.checkAuthStatus ? window.checkAuthStatus() : Promise.resolve();
+                    return authPromise.then(() => {
+                        setTimeout(function () {
+                            if (window.jQuery && window.jQuery.fn && window.jQuery.fn.slicknav) {
+                                window.jQuery('ul#navigation').slicknav({
+                                    prependTo: '.mobile_menu',
+                                    closedSymbol: '+',
+                                    openedSymbol: '-'
+                                });
+                            }
+                        }, 50);
+                    });
+                });
+        }
+
+        bootstrapHeader();
+
+        window.addEventListener('load', function () {
+            if (window.checkAuthStatus) {
+                window.checkAuthStatus();
+            }
+        });
+    </script>
+    <script>
+        fetch('footer.html')
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('footer').innerHTML = data;
+            });
+    </script>
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const providerId = params.get("provider");
+
+        if (providerId) {
+            if (typeof loadProviderDetails === "function") {
+                loadProviderDetails(providerId);
+            } else {
+                console.error("loadProviderDetails is not available.");
+            }
+
+            if (typeof loadOtherProviders === "function") {
+                loadOtherProviders(providerId);
+            } else {
+                console.error("loadOtherProviders is not available.");
+            }
+        }
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,363 @@
+﻿<!doctype html>
+<html class="no-js" lang="zxx">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>Provider Registry | Skill Link</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script>window.location.replace('user_profile.html');</script>
+    <link rel="manifest" href="site.webmanifest">
+    <link rel="shortcut icon" type="image/x-icon" href="assets/img/favicon.ico">
+    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/css/owl.carousel.min.css">
+    <link rel="stylesheet" href="assets/css/slicknav.css">
+    <link rel="stylesheet" href="assets/css/flaticon.css">
+    <link rel="stylesheet" href="assets/css/animate.min.css">
+    <link rel="stylesheet" href="assets/css/magnific-popup.css">
+    <link rel="stylesheet" href="assets/css/fontawesome-all.min.css">
+    <link rel="stylesheet" href="assets/css/themify-icons.css">
+    <link rel="stylesheet" href="assets/css/slick.css">
+    <link rel="stylesheet" href="assets/css/nice-select.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <style>
+        .registry-area { padding: 110px 0 120px; background: #f9f9ff; }
+        .registry-box { background: #fff; padding: 45px 40px; box-shadow: 0 10px 30px rgba(35, 47, 85, .08); }
+        .registry-box .section-tittle { margin-bottom: 35px; }
+        .registry-box .section-tittle h2 { font-size: 34px; margin-bottom: 12px; }
+        .registry-box .form-contact .form-control { height: 55px; margin-bottom: 20px; }
+        .registry-box .form-contact textarea.form-control { height: auto; min-height: 150px; padding-top: 18px; }
+        .registry-box .nice-select { width: 100%; height: 55px; line-height: 55px; margin-bottom: 20px; border: 1px solid #e5e6e9; border-radius: 0; color: #777; }
+        .registry-box .nice-select .list { width: 100%; max-height: 240px; overflow-y: auto; }
+        .registry-box select.form-control { display: block; width: 100%; padding: 0 18px; color: #777; border: 1px solid #e5e6e9; border-radius: 0; background: #fff; }
+        .registry-box .button-contactForm { min-width: 210px; text-align: center; }
+        .service-entry { padding: 25px; margin-bottom: 24px; border: 1px solid #e5e6e9; background: #fcfcff; }
+        .service-entry__header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; }
+        .service-entry__header h3 { margin: 0; font-size: 19px; }
+        .remove-service { border: 0; padding: 7px 12px; color: #721c24; background: #f8d7da; cursor: pointer; }
+        .add-service { margin: -4px 0 25px; }
+        .danger-zone { margin-top: 30px; padding-top: 25px; border-top: 1px solid #e5e6e9; }
+        .danger-zone h3 { color: #721c24; font-size: 21px; }
+        .delete-provider { min-width: auto; background: #a71d2a; border-color: #a71d2a; }
+        .registry-message { display: none; margin-top: 22px; padding: 16px 18px; font-size: 15px; }
+        .registry-message.success { display: block; color: #155724; background: #d4edda; border: 1px solid #c3e6cb; }
+        .registry-message.error { display: block; color: #721c24; background: #f8d7da; border: 1px solid #f5c6cb; }
+        .registry-side { min-height: 100%; padding: 45px 35px; background-image: linear-gradient(rgba(26, 33, 61, .72), rgba(26, 33, 61, .72)), url(assets/img/gallery/section_bg04.jpg); background-position: center; background-size: cover; color: #fff; }
+        .registry-side h3 { color: #fff; font-size: 28px; margin-bottom: 18px; }
+        .registry-side p { color: #f1f1f1; margin-bottom: 28px; }
+        .registry-side ul li { color: #fff; margin-bottom: 14px; }
+        .registry-side ul li i { color: #ff3d1c; margin-right: 10px; }
+        @media (max-width: 767px) { .registry-box { padding: 35px 25px; } .registry-box .section-tittle h2 { font-size: 28px; } }
+    </style>
+</head>
+
+<body>
+    <div id="preloader-active">
+        <div class="preloader d-flex align-items-center justify-content-center">
+            <div class="preloader-inner position-relative">
+                <div class="preloader-circle"></div>
+                <div class="preloader-img pere-text"><img src="assets/img/logo/loder.jpg" alt=""></div>
+            </div>
+        </div>
+    </div>
+    <div id="header"></div>
+    <main>
+        <div class="hero-area2 slider-height2 hero-overly2 d-flex align-items-center">
+            <div class="container">
+                <div class="row"><div class="col-xl-12"><div class="hero-cap text-center pt-50"><h2>Provider Registry</h2></div></div></div>
+            </div>
+        </div>
+
+        <section class="registry-area">
+            <div class="container">
+                <div class="row justify-content-center align-items-stretch">
+                    <div class="col-xl-8 col-lg-8 col-md-10">
+                        <div class="registry-box">
+                            <div class="section-tittle text-center">
+                                <span>Become a provider</span>
+                                <h2>Register your service</h2>
+                            </div>
+                            <form class="form-contact contact_form" id="providerRegistryForm" action="#" method="post">
+                                <div class="row">
+                                    <div class="col-sm-7">
+                                        <div class="form-group"><input class="form-control valid" name="business_name" id="business_name" type="text" required onfocus="this.placeholder = ''" onblur="this.placeholder = 'Business name'" placeholder="Business name"></div>
+                                    </div>
+                                    <div class="col-sm-5">
+                                        <div class="form-group"><input class="form-control valid" name="phone" id="phone" type="tel" required onfocus="this.placeholder = ''" onblur="this.placeholder = 'Phone number'" placeholder="Phone number"></div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <div class="form-group"><input class="form-control" name="website" id="registration_website" type="url" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Website (optional)'" placeholder="Website (optional)"></div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="form-group"><input class="form-control" name="linkedin_url" id="registration_linkedin_url" type="url" onfocus="this.placeholder = ''" onblur="this.placeholder = 'LinkedIn URL (optional)'" placeholder="LinkedIn URL (optional)"></div>
+                                    </div>
+                                </div>
+                                <div id="servicesContainer"></div>
+                                <button type="button" class="button button-contactForm boxed-btn add-service" id="addService">Add another service</button>
+                                <div class="row">
+                                    <div class="col-sm-4">
+                                        <div class="form-group"><input class="form-control" name="area" id="area" type="text" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Area'" placeholder="Area"></div>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <div class="form-group"><input class="form-control" name="city" id="city" type="text" required onfocus="this.placeholder = ''" onblur="this.placeholder = 'City'" placeholder="City"></div>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <div class="form-group"><input class="form-control" name="state" id="state" type="text" required onfocus="this.placeholder = ''" onblur="this.placeholder = 'State'" placeholder="State"></div>
+                                    </div>
+                                </div>
+                                <div class="form-group"><input class="form-control" name="address" id="address" type="text" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Full address'" placeholder="Full address"></div>
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <div class="form-group"><input class="form-control" name="latitude" id="latitude" type="number" step="any" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Latitude (optional)'" placeholder="Latitude (optional)"></div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="form-group"><input class="form-control" name="longitude" id="longitude" type="number" step="any" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Longitude (optional)'" placeholder="Longitude (optional)"></div>
+                                    </div>
+                                </div>
+                                <div class="form-group mt-3"><button type="submit" class="button button-contactForm boxed-btn" id="registrySubmit">Register Provider</button></div>
+                                <div id="registryMessage" class="registry-message"></div>
+                            </form>
+                            <div class="danger-zone">
+                                <h3>Remove a provider</h3>
+                                <p>Enter a provider ID to permanently remove that provider and all its services.</p>
+                                <form id="deleteProviderForm">
+                                    <div class="row align-items-center">
+                                        <div class="col-sm-7"><div class="form-group"><input class="form-control" id="deleteProviderId" type="number" min="1" required placeholder="Provider ID"></div></div>
+                                        <div class="col-sm-5"><button type="submit" class="button button-contactForm boxed-btn delete-provider" id="deleteProviderButton">Delete provider</button></div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-4 col-lg-4 d-none d-lg-block">
+                        <div class="registry-side">
+                            <h3>List your business where customers are already searching.</h3>
+                            <p>Your registration creates one provider profile with as many service listings as you need, all at the same location.</p>
+                            <ul>
+                                <li><i class="ti-check"></i>Provider details</li>
+                                <li><i class="ti-check"></i>Service information</li>
+                                <li><i class="ti-check"></i>Location details</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    <div id="footer"></div>
+    <div id="back-top"><a title="Go to Top" href="#"><i class="fas fa-level-up-alt"></i></a></div>
+
+    <script src="./assets/js/vendor/modernizr-3.5.0.min.js"></script>
+    <script src="./assets/js/vendor/jquery-1.12.4.min.js"></script>
+    <script src="./assets/js/popper.min.js"></script>
+    <script src="./assets/js/bootstrap.min.js"></script>
+    <script src="./assets/js/jquery.slicknav.min.js"></script>
+    <script src="./assets/js/owl.carousel.min.js"></script>
+    <script src="./assets/js/slick.min.js"></script>
+    <script src="./assets/js/wow.min.js"></script>
+    <script src="./assets/js/animated.headline.js"></script>
+    <script src="./assets/js/jquery.magnific-popup.js"></script>
+    <script src="./assets/js/jquery.nice-select.min.js"></script>
+    <script src="./assets/js/jquery.sticky.js"></script>
+    <script src="./assets/js/contact.js"></script>
+    <script src="./assets/js/jquery.form.js"></script>
+    <script src="./assets/js/jquery.validate.min.js"></script>
+    <script src="./assets/js/mail-script.js"></script>
+    <script src="./assets/js/jquery.ajaxchimp.min.js"></script>
+    <script src="./assets/js/plugins.js"></script>
+    <script src="./assets/js/main.js"></script>
+    <script src="./Doc/js/config.js"></script>
+    <script src="./Doc/js/index.js"></script>
+    <script>
+        function bootstrapHeader() {
+            fetch('header.html').then(response => response.text()).then(data => {
+                document.getElementById('header').innerHTML = data;
+                const authPromise = window.checkAuthStatus ? window.checkAuthStatus() : Promise.resolve();
+                return authPromise.then(() => {
+                    setTimeout(function () {
+                        if (window.jQuery && window.jQuery.fn && window.jQuery.fn.slicknav) {
+                            window.jQuery('ul#navigation').slicknav({ prependTo: '.mobile_menu', closedSymbol: '+', openedSymbol: '-' });
+                        }
+                    }, 50);
+                });
+            });
+        }
+        bootstrapHeader();
+    </script>
+    <script>fetch('footer.html').then(response => response.text()).then(data => { document.getElementById('footer').innerHTML = data; });</script>
+    <script>
+        const form = document.getElementById('providerRegistryForm');
+        const messageBox = document.getElementById('registryMessage');
+        const submitButton = document.getElementById('registrySubmit');
+        const servicesContainer = document.getElementById('servicesContainer');
+        const addServiceButton = document.getElementById('addService');
+        const deleteProviderForm = document.getElementById('deleteProviderForm');
+        const deleteProviderButton = document.getElementById('deleteProviderButton');
+        let categories = [];
+
+        function setRegistryMessage(type, text) {
+            messageBox.className = `registry-message ${type}`;
+            messageBox.textContent = text;
+        }
+
+        function getValue(element) {
+            const value = element.value;
+            return typeof value === 'string' ? value.trim() : value;
+        }
+
+        function escapeHtml(value) {
+            const element = document.createElement('div');
+            element.textContent = value;
+            return element.innerHTML;
+        }
+
+        function categoryOptions(selectedId = '') {
+            return '<option value="">Choose category</option>' + categories
+                .map(category => `<option value="${category.id}" ${String(category.id) === String(selectedId) ? 'selected' : ''}>${escapeHtml(category.name)}</option>`)
+                .join('');
+        }
+
+        function createServiceEntry(values = {}) {
+            const entry = document.createElement('section');
+            entry.className = 'service-entry';
+            entry.innerHTML = `
+                <div class="service-entry__header">
+                    <h3>Service</h3>
+                    <button type="button" class="remove-service">Remove</button>
+                </div>
+                <div class="row">
+                    <div class="col-sm-7"><div class="form-group"><input class="form-control service-title" type="text" required placeholder="Service title"></div></div>
+                    <div class="col-sm-5"><div class="form-group"><select class="form-control service-category" required>${categoryOptions(values.category_id)}</select></div></div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-6"><div class="form-group"><input class="form-control service-price" type="text" placeholder="Price"></div></div>
+                    <div class="col-sm-6"><div class="form-group"><input class="form-control service-image-url" type="text" placeholder="Image URL (optional)"></div></div>
+                </div>
+                <div class="form-group"><textarea class="form-control w-100 service-description" cols="30" rows="6" required placeholder="Describe your service"></textarea></div>`;
+            entry.querySelector('.service-title').value = values.service_title || '';
+            entry.querySelector('.service-price').value = values.price || '';
+            entry.querySelector('.service-image-url').value = values.image_url || '';
+            entry.querySelector('.service-description').value = values.description || '';
+            entry.querySelector('.remove-service').addEventListener('click', () => {
+                if (servicesContainer.children.length > 1) {
+                    entry.remove();
+                }
+            });
+            servicesContainer.appendChild(entry);
+        }
+
+        function resetServices() {
+            servicesContainer.innerHTML = '';
+            createServiceEntry();
+        }
+
+        function refreshCategoryOptions() {
+            servicesContainer.querySelectorAll('.service-category').forEach(select => {
+                const selectedId = select.value;
+                select.innerHTML = categoryOptions(selectedId);
+            });
+        }
+
+        resetServices();
+        addServiceButton.addEventListener('click', () => createServiceEntry());
+
+        fetch(`${window.CONFIG.API_URL}/api/v1/auth/me`, { credentials: 'include' })
+            .then(response => {
+                if (!response.ok) window.location.href = 'login.html';
+            })
+            .catch(() => { window.location.href = 'login.html'; });
+
+        fetch(`${window.CONFIG.API_URL}/api/v1/categories?type=None`)
+            .then(response => response.json())
+            .then(data => {
+                categories = Array.isArray(data.categories) ? data.categories : [];
+                refreshCategoryOptions();
+            })
+            .catch(error => {
+                console.error('Error loading categories:', error);
+                setRegistryMessage('error', 'Unable to load categories. Please refresh the page.');
+            });
+
+        form.addEventListener('submit', async event => {
+            event.preventDefault();
+            messageBox.className = 'registry-message';
+            messageBox.textContent = '';
+            submitButton.disabled = true;
+            submitButton.textContent = 'Registering...';
+
+            const services = Array.from(servicesContainer.querySelectorAll('.service-entry')).map(entry => ({
+                category_id: Number(getValue(entry.querySelector('.service-category'))),
+                service_title: getValue(entry.querySelector('.service-title')),
+                description: getValue(entry.querySelector('.service-description')),
+                price: getValue(entry.querySelector('.service-price')) || null,
+                image_url: getValue(entry.querySelector('.service-image-url')) || null
+            }));
+            const payload = {
+                business_name: getValue(document.getElementById('business_name')),
+                phone: getValue(document.getElementById('phone')),
+                services,
+                area: getValue(document.getElementById('area')) || null,
+                city: getValue(document.getElementById('city')),
+                state: getValue(document.getElementById('state')),
+                address: getValue(document.getElementById('address')) || null,
+                latitude: getValue(document.getElementById('latitude')) ? Number(getValue(document.getElementById('latitude'))) : null,
+                longitude: getValue(document.getElementById('longitude')) ? Number(getValue(document.getElementById('longitude'))) : null
+            };
+
+            try {
+                const response = await fetch(`${window.CONFIG.API_URL}/api/v1/providers`, {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.detail || 'Unable to register provider.');
+                }
+
+                setRegistryMessage('success', `${data.provider.business_name} has been registered with ${data.services.length} service${data.services.length === 1 ? '' : 's'}. Provider ID: ${data.provider.id}.`);
+                form.reset();
+                resetServices();
+            } catch (error) {
+                console.error(error);
+                setRegistryMessage('error', error.message || 'Unable to register provider. Please try again.');
+            } finally {
+                submitButton.disabled = false;
+                submitButton.textContent = 'Register Provider';
+            }
+        });
+
+        deleteProviderForm.addEventListener('submit', async event => {
+            event.preventDefault();
+            const providerId = document.getElementById('deleteProviderId').value;
+            if (!window.confirm(`Delete provider ${providerId} and all of its services? This cannot be undone.`)) {
+                return;
+            }
+
+            deleteProviderButton.disabled = true;
+            deleteProviderButton.textContent = 'Deleting...';
+            try {
+                const response = await fetch(`${window.CONFIG.API_URL}/api/v1/providers/${providerId}`, { method: 'DELETE', credentials: 'include' });
+                const data = await response.json();
+                if (!response.ok) {
+                    throw new Error(data.detail || 'Unable to delete provider.');
+                }
+                setRegistryMessage('success', `Provider ${providerId} and its services have been deleted.`);
+                deleteProviderForm.reset();
+            } catch (error) {
+                console.error(error);
+                setRegistryMessage('error', error.message || 'Unable to delete provider. Please try again.');
+            } finally {
+                deleteProviderButton.disabled = false;
+                deleteProviderButton.textContent = 'Delete provider';
+            }
+        });
+    </script>
+</body>
+
+</html>

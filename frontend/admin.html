@@ -1,0 +1,410 @@
+<!doctype html>
+<html class="no-js" lang="zxx">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Admin Dashboard | Citylisting</title>
+    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/css/slicknav.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <style>
+        body { background: #f6f7fb; }
+        .admin-card { background: #fff; border-radius: 12px; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); margin-bottom: 20px; }
+        .admin-table th, .admin-table td { vertical-align: middle; }
+        .badge-pending { background: #f0ad4e; color: white; }
+        .badge-verified { background: #28a745; color: white; }
+
+        body.admin-page header.header-area,
+        body.admin-page header.header-area.header-transparent,
+        body.admin-page .header-area.header-transparent {
+            background: rgba(15, 23, 42, 0.95) !important;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.14);
+        }
+        header.header-area .main-header .main-menu ul#navigation li a,
+        header.header-area .main-header .main-menu ul#navigation li a i {
+            color: #f8fafc !important;
+        }
+        header.header-area .main-header .main-menu ul#navigation li a:hover {
+            color: #a5b4fc !important;
+        }
+        header.header-area .login > a,
+        header.header-area .add-list > a {
+            color: #fff !important;
+        }
+        header.header-area .add-list a {
+            background: rgba(255, 255, 255, 0.12);
+            padding: 10px 16px;
+            border-radius: 10px;
+        }
+        header.header-area .logo a img {
+            filter: brightness(0) invert(1);
+        }
+
+        main {
+            padding-top: 140px;
+            min-height: calc(100vh - 140px);
+        }
+        .dashboard-header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 24px 28px;
+            border-radius: 16px;
+            box-shadow: 0 12px 26px rgba(15, 23, 42, 0.08);
+            margin-bottom: 28px;
+            backdrop-filter: blur(12px);
+        }
+        .dashboard-header h2 {
+            margin: 0 0 8px;
+            letter-spacing: 0.02em;
+            font-size: 2rem;
+        }
+        .dashboard-header p {
+            margin: 0;
+            color: #6b7280;
+            font-size: 0.98rem;
+        }
+    </style>
+</head>
+<body class="admin-page">
+    <div id="header"></div>
+    <main>
+        <div class="container py-5">
+            <div class="dashboard-header">
+                <h2>Admin Dashboard</h2>
+                <p>Review pending providers and manage approved listings.</p>
+            </div>
+            <div id="messageBox" class="mb-3"></div>
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="admin-card">
+                        <h5>Total Users</h5>
+                        <h2 id="totalUsers">0</h2>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="admin-card">
+                        <h5>Total Providers</h5>
+                        <h2 id="totalProviders">0</h2>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="admin-card">
+                        <h5>Verified Providers</h5>
+                        <h2 id="verifiedProviders">0</h2>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="admin-card">
+                        <h5>Pending Providers</h5>
+                        <h2 id="pendingProviders">0</h2>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="admin-card">
+                        <h5>Pending Claims</h5>
+                        <h2 id="pendingClaimRequests">0</h2>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mb-4">
+                <div class="col-lg-8">
+                    <div class="admin-card">
+                        <div class="d-flex gap-2 flex-wrap align-items-center">
+                            <input id="providerSearchInput" class="form-control" type="search" placeholder="Search provider by ID or name" style="flex: 1 1 auto; min-width: 220px;" />
+                            <button id="providerSearchBtn" class="btn btn-primary mt-3 mr-2">Search</button>
+                            <button id="providerResetSearchBtn" class="btn btn-secondary mt-3">Reset</button>
+                        </div>
+                        <div class="mt-3 d-flex align-items-center gap-2">
+                            <span id="providerPaginationInfo">Page 1</span>
+                            <button id="providerPrevBtn" class="btn btn-sm btn-light mr-2 ml-2">Previous</button>
+                            <button id="providerNextBtn" class="btn btn-sm btn-light">Next</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="admin-card">
+                <h4 class="mb-3">Pending Providers</h4>
+                <div class="table-responsive">
+                    <table class="table admin-table">
+                        <thead>
+                            <tr>
+                                <th>Business Name</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>Status</th>
+                                <th>Created</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="providersTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="admin-card">
+                <h4 class="mb-3">Pending Claim Requests</h4>
+                <div class="table-responsive">
+                    <table class="table admin-table">
+                        <thead>
+                            <tr>
+                                <th>Provider</th>
+                                <th>Claimed By</th>
+                                <th>Email</th>
+                                <th>Requested</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="claimRequestsTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+    <div id="footer"></div>
+
+    <script src="./assets/js/vendor/jquery-1.12.4.min.js"></script>
+    <script src="./assets/js/jquery.slicknav.min.js"></script>
+    <script src="./assets/js/main.js"></script>
+    <script src="./Doc/js/config.js"></script>
+    <script src="./Doc/js/index.js"></script>
+    <script>
+        const api = window.CONFIG && window.CONFIG.API_URL ? window.CONFIG.API_URL : '';
+        const messageBox = document.getElementById('messageBox');
+        const providersTableBody = document.getElementById('providersTableBody');
+        const claimRequestsTableBody = document.getElementById('claimRequestsTableBody');
+        const providerSearchInput = document.getElementById('providerSearchInput');
+        const providerSearchBtn = document.getElementById('providerSearchBtn');
+        const providerResetSearchBtn = document.getElementById('providerResetSearchBtn');
+        const providerPrevBtn = document.getElementById('providerPrevBtn');
+        const providerNextBtn = document.getElementById('providerNextBtn');
+        const providerPaginationInfo = document.getElementById('providerPaginationInfo');
+
+        let providerSearchTerm = '';
+        let providerPage = 1;
+        let providerTotal = 0;
+        let providerPageSize = 25;
+
+        function setMessage(type, text) {
+            messageBox.className = `alert alert-${type === 'error' ? 'danger' : 'success'}`;
+            messageBox.textContent = text;
+        }
+
+        async function request(url, options = {}) {
+            const response = await fetch(`${api}/api/v1${url}`, { credentials: 'include', ...options });
+            const data = await response.json().catch(() => ({}));
+            if (!response.ok) throw new Error(data.detail || 'Request failed');
+            return data;
+        }
+
+        async function loadDashboard() {
+            try {
+                const data = await request('/admin/dashboard');
+                document.getElementById('totalUsers').textContent = data.total_users ?? 0;
+                document.getElementById('totalProviders').textContent = data.total_providers ?? 0;
+                document.getElementById('verifiedProviders').textContent = data.verified_providers ?? 0;
+                document.getElementById('pendingProviders').textContent = data.pending_providers ?? 0;
+                const pendingClaimRequests = document.getElementById('pendingClaimRequests');
+                if (pendingClaimRequests) pendingClaimRequests.textContent = data.pending_claim_requests ?? 0;
+            } catch (error) {
+                setMessage('error', error.message || 'Unable to load dashboard data.');
+            }
+        }
+
+        async function loadProviders() {
+            try {
+                const query = new URLSearchParams();
+                if (providerSearchTerm) query.set('search', providerSearchTerm);
+                query.set('page', providerPage);
+                query.set('page_size', providerPageSize);
+                const data = await request(`/admin/providers?${query.toString()}`);
+                providerTotal = data.total ?? 0;
+                providerPage = data.page ?? providerPage;
+                providerPageSize = data.page_size ?? providerPageSize;
+                updateProviderPaginationInfo();
+                const rows = (data.providers || []).map(provider => `
+                    <tr>
+                        <td>${provider.business_name || 'N/A'}</td>
+                        <td>${provider.email || 'N/A'}</td>
+                        <td>${provider.phone || 'N/A'}</td>
+                        <td><span class="badge ${provider.verified ? 'badge-verified' : 'badge-pending'}">${provider.verified ? 'Verified' : 'Pending'}</span></td>
+                        <td>${provider.created_at ? new Date(provider.created_at).toLocaleDateString() : 'N/A'}</td>
+                        <td>
+                            ${provider.verified ? `<button class="btn btn-sm btn-warning unverify-btn" data-id="${provider.id}">Unverify</button>` : `<button class="btn btn-sm btn-primary verify-btn" data-id="${provider.id}">Approve</button>`}
+                        </td>
+                    </tr>
+                `).join('');
+                providersTableBody.innerHTML = rows || '<tr><td colspan="6" class="text-center">No matching providers found.</td></tr>';
+                providersTableBody.querySelectorAll('.verify-btn').forEach(button => {
+                    button.addEventListener('click', async () => {
+                        const id = button.getAttribute('data-id');
+                        try {
+                            await request(`/admin/providers/${id}/verify`, { method: 'POST' });
+                            setMessage('success', 'Provider approved successfully.');
+                            loadDashboard();
+                            loadProviders();
+                        } catch (error) {
+                            setMessage('error', error.message || 'Unable to approve provider.');
+                        }
+                    });
+                });
+                providersTableBody.querySelectorAll('.unverify-btn').forEach(button => {
+                    button.addEventListener('click', async () => {
+                        const id = button.getAttribute('data-id');
+                        try {
+                            await request(`/admin/providers/${id}/unverify`, { method: 'POST' });
+                            setMessage('success', 'Provider verification revoked successfully.');
+                            loadDashboard();
+                            loadProviders();
+                        } catch (error) {
+                            setMessage('error', error.message || 'Unable to unverify provider.');
+                        }
+                    });
+                });
+            } catch (error) {
+                setMessage('error', error.message || 'Unable to load providers.');
+            }
+        }
+
+        async function init() {
+            try {
+                const authResponse = await fetch(`${api}/api/v1/auth/me`, { credentials: 'include' });
+                if (!authResponse.ok) {
+                    window.location.href = 'login.html';
+                    return;
+                }
+                const authData = await authResponse.json();
+                if (!authData.user || !authData.user.is_admin) {
+                    window.location.href = 'index.html';
+                    return;
+                }
+            } catch (error) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            if (providerSearchBtn) {
+                providerSearchBtn.addEventListener('click', () => {
+                    providerSearchTerm = providerSearchInput?.value?.trim() || '';
+                    providerPage = 1;
+                    loadProviders();
+                });
+            }
+            if (providerResetSearchBtn) {
+                providerResetSearchBtn.addEventListener('click', () => {
+                    providerSearchTerm = '';
+                    providerPage = 1;
+                    if (providerSearchInput) providerSearchInput.value = '';
+                    loadProviders();
+                });
+            }
+            if (providerPrevBtn) {
+                providerPrevBtn.addEventListener('click', () => {
+                    if (providerPage > 1) {
+                        providerPage -= 1;
+                        loadProviders();
+                    }
+                });
+            }
+            if (providerNextBtn) {
+                providerNextBtn.addEventListener('click', () => {
+                    const maxPage = Math.ceil(providerTotal / providerPageSize);
+                    if (providerPage < maxPage) {
+                        providerPage += 1;
+                        loadProviders();
+                    }
+                });
+            }
+
+            function bootstrapHeader() {
+                fetch('header.html').then(response => response.text()).then(data => {
+                    document.getElementById('header').innerHTML = data;
+                    const authPromise = window.checkAuthStatus ? window.checkAuthStatus() : Promise.resolve();
+                    return authPromise.then(() => {
+                        setTimeout(function () {
+                            if (window.jQuery && window.jQuery.fn && window.jQuery.fn.slicknav) {
+                                window.jQuery('ul#navigation').slicknav({
+                                    prependTo: '.mobile_menu',
+                                    closedSymbol: '+',
+                                    openedSymbol: '-'
+                                });
+                            }
+                        }, 50);
+                    });
+                });
+            }
+            bootstrapHeader();
+            fetch('footer.html').then(response => response.text()).then(data => { document.getElementById('footer').innerHTML = data; });
+            loadDashboard();
+            loadProviders();
+            loadClaimRequests();
+        }
+
+        function updateProviderPaginationInfo() {
+            if (!providerPaginationInfo) return;
+            const start = (providerPage - 1) * providerPageSize + 1;
+            const end = Math.min(providerPage * providerPageSize, providerTotal);
+            const maxPage = Math.max(1, Math.ceil(providerTotal / providerPageSize));
+            providerPaginationInfo.textContent = `Showing ${start}–${end} of ${providerTotal} providers (Page ${providerPage} of ${maxPage})`;
+            if (providerPrevBtn) providerPrevBtn.disabled = providerPage <= 1;
+            if (providerNextBtn) providerNextBtn.disabled = providerPage >= maxPage;
+        }
+
+        async function loadClaimRequests() {
+            if (!claimRequestsTableBody) return;
+
+            try {
+                const data = await request('/admin/claim_requests');
+                const rows = (data.claim_requests || []).map(claim => `
+                    <tr>
+                        <td>${claim.provider_name || 'N/A'}</td>
+                        <td>${claim.username || 'N/A'}</td>
+                        <td>${claim.email || 'N/A'}</td>
+                        <td>${claim.created_at ? new Date(claim.created_at).toLocaleDateString() : 'N/A'}</td>
+                        <td>
+                            <button class="btn btn-sm btn-success approve-claim-btn" data-id="${claim.id}">Approve</button>
+                            <button class="btn btn-sm btn-danger reject-claim-btn" data-id="${claim.id}">Reject</button>
+                        </td>
+                    </tr>
+                `).join('');
+
+                claimRequestsTableBody.innerHTML = rows || '<tr><td colspan="5" class="text-center">No pending claim requests.</td></tr>';
+                claimRequestsTableBody.querySelectorAll('.approve-claim-btn').forEach(button => {
+                    button.addEventListener('click', async () => {
+                        const id = button.getAttribute('data-id');
+                        try {
+                            await request(`/admin/claim_requests/${id}/approve`, { method: 'POST' });
+                            setMessage('success', 'Claim request approved.');
+                            loadDashboard();
+                            loadClaimRequests();
+                        } catch (error) {
+                            setMessage('error', error.message || 'Unable to approve claim request.');
+                        }
+                    });
+                });
+                claimRequestsTableBody.querySelectorAll('.reject-claim-btn').forEach(button => {
+                    button.addEventListener('click', async () => {
+                        const id = button.getAttribute('data-id');
+                        try {
+                            await request(`/admin/claim_requests/${id}/reject`, { method: 'POST' });
+                            setMessage('success', 'Claim request rejected.');
+                            loadDashboard();
+                            loadClaimRequests();
+                        } catch (error) {
+                            setMessage('error', error.message || 'Unable to reject claim request.');
+                        }
+                    });
+                });
+            } catch (error) {
+                setMessage('error', error.message || 'Unable to load claim requests.');
+            }
+        }
+
+        init();
+    </script>
+</body>
+</html>

@@ -1,0 +1,277 @@
+<!doctype html>
+<html class="no-js" lang="zxx">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>City listing </title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="manifest" href="site.webmanifest">
+    <link rel="shortcut icon" type="image/x-icon" href="assets/img/favicon.ico">
+
+    <!-- CSS here -->
+    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/css/owl.carousel.min.css">
+    <link rel="stylesheet" href="assets/css/slicknav.css">
+    <link rel="stylesheet" href="assets/css/flaticon.css">
+    <link rel="stylesheet" href="assets/css/price_rangs.css">
+    <link rel="stylesheet" href="assets/css/animate.min.css">
+    <link rel="stylesheet" href="assets/css/magnific-popup.css">
+    <link rel="stylesheet" href="assets/css/fontawesome-all.min.css">
+    <link rel="stylesheet" href="assets/css/themify-icons.css">
+    <link rel="stylesheet" href="assets/css/slick.css">
+    <link rel="stylesheet" href="assets/css/nice-select.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+
+<body>
+    <!-- Preloader Start -->
+    <div id="preloader-active">
+        <div class="preloader d-flex align-items-center justify-content-center">
+            <div class="preloader-inner position-relative">
+                <div class="preloader-circle"></div>
+                <div class="preloader-img pere-text">
+                    <img src="assets/img/logo/loder.jpg" alt="">
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Preloader Start -->
+    <div id="header"></div>
+    <main>
+
+        <!-- Hero Start-->
+        <div class="hero-area3 hero-overly2 d-flex align-items-center ">
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-xl-8 col-lg-9">
+                        <div class="hero-cap text-center pt-50 pb-20">
+                            <h2>Our Listing</h2>
+                        </div>
+                        <!--Hero form -->
+                        <form action="#" class="search-box search-box2" id="hero-search-form">
+                            <div class="input-form">
+                                <input id="quick-search" type="text" placeholder="What are you looking for?">
+                            </div>
+                            <div class="select-form">
+                                <div class="select-itms">
+                                    <select name="select" id="quick-category">
+                                        <option value="">All Categories</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <!-- Search box -->
+                            <div class="search-form">
+                                <button type="button" id="quick-search-button" class="btn list-btn">Search</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--Hero End -->
+        <!-- listing Area Start -->
+        <div class="listing-area pt-120 pb-120">
+            <div class="container">
+                <div class="row">
+                    <!-- Left content -->
+                    <div class="col-xl-4 col-lg-4 col-md-6">
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="small-section-tittle2 mb-45">
+                                    <h4>Advanced Filter</h4>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Job Category Listing start -->
+                        <div class="category-listing mb-50">
+                            <!-- single one -->
+                            <div class="single-listing">
+                                <!-- input -->
+                                <div class="input-form">
+                                    <input id="advanced-search" type="text" placeholder="What are you finding?">
+                                </div>
+                                <!-- Select job items start -->
+                                <div class="select-job-items2">
+                                    <input id="advanced-location" type="text" placeholder="Location" class="form-control" />
+                                </div>
+                                <!--  Select job items End-->
+                                <!-- select-Categories start -->
+                                <div class="select-Categories pt-140 pb-20">
+                                    <label class="container">Full Time
+                                        <input type="checkbox">
+                                        <span class="checkmark"></span>
+                                    </label>
+                                    <label class="container">Ratings
+                                        <input type="checkbox" checked="checked active">
+                                        <span class="checkmark"></span>
+                                    </label>
+                                </div>
+                                <!-- select-Categories End -->
+                                <!-- Select job items start -->
+                                <!--  Select job items End-->
+                            </div>
+
+                            <div class="single-listing">
+                                <!-- Range Slider Start -->
+                                <aside class="left_widgets p_filter_widgets price_rangs_aside sidebar_box_shadow">
+                                    <div class="small-section-tittle2">
+                                        <h4>Price range</h4>
+                                    </div>
+                                    <div class="widgets_inner">
+                                        <div class="range_item">
+                                            <!-- <div id="slider-range"></div> -->
+                                            <input type="text" class="js-range-slider" value="" />
+                                            <div class="d-flex align-items-center">
+                                                <div class="price_text">
+                                                    <p>Price :</p>
+                                                </div>
+                                                <div class="price_value d-flex justify-content-center">
+                                                    <input type="text" class="js-input-from" id="price-from" readonly />
+                                                    <span>to</span>
+                                                    <input type="text" class="js-input-to" id="price-to" readonly />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </aside>
+                                <!-- Range Slider End -->
+                                <button type="button" id="reset-filters" class="btn list-btn mt-20">Reset</button>
+                            </div>
+                        </div>
+                        <!-- Job Category Listing End -->
+                    </div>
+                    <!-- Right content -->
+                    <div class="col-xl-8 col-lg-8 col-md-6">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="count mb-35">
+                                    <span>5432 Listings are available</span>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- listing Details Stat-->
+                        <div class="listing-details-area">
+                            <div class="container">
+                                <div class="row" id="services-container">
+                                    <!-- Services will be inserted here -->
+                                    
+                                </div>
+                            </div>
+                        </div>
+                        <!-- listing Details End -->
+                        <!--Pagination Start  -->
+                        <div class="pagination-area pt-70 text-center">
+                            <div class="container">
+                                <div class="row">
+                                    <div class="col-xl-12">
+                                        <div class="single-wrap d-flex justify-content-center">
+                                            <nav aria-label="Page navigation example">
+                                                <ul id="pagination-controls" class="pagination justify-content-start"></ul>
+                                            </nav>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!--Pagination End  -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- listing-area Area End -->
+
+    </main>
+    <div id="footer"></div>
+    <!-- Scroll Up -->
+    <div id="back-top">
+        <a title="Go to Top" href="#"> <i class="fas fa-level-up-alt"></i></a>
+    </div>
+
+
+    <!-- JS here -->
+    <!-- All JS Custom Plugins Link Here here -->
+    <script src="./assets/js/vendor/modernizr-3.5.0.min.js"></script>
+    <!-- Jquery, Popper, Bootstrap -->
+    <script src="./assets/js/vendor/jquery-1.12.4.min.js"></script>
+    <script src="./assets/js/popper.min.js"></script>
+    <script src="./assets/js/bootstrap.min.js"></script>
+    <!-- Jquery Mobile Menu -->
+    <script src="./assets/js/jquery.slicknav.min.js"></script>
+
+    <!-- Jquery Slick , Owl-Carousel Plugins -->
+    <script src="./assets/js/owl.carousel.min.js"></script>
+    <script src="./assets/js/slick.min.js"></script>
+    <!-- One Page, Animated-HeadLin -->
+    <script src="./assets/js/wow.min.js"></script>
+    <script src="./assets/js/price-range.js"></script>
+    <script src="./assets/js/animated.headline.js"></script>
+    <script src="./assets/js/jquery.magnific-popup.js"></script>
+
+    <!-- Nice-select, sticky -->
+    <script src="./assets/js/jquery.nice-select.min.js"></script>
+    <script src="./assets/js/jquery.sticky.js"></script>
+
+    <!-- contact js -->
+    <script src="./assets/js/contact.js"></script>
+    <script src="./assets/js/jquery.form.js"></script>
+    <script src="./assets/js/jquery.validate.min.js"></script>
+    <script src="./assets/js/mail-script.js"></script>
+    <script src="./assets/js/jquery.ajaxchimp.min.js"></script>
+
+    <!-- Jquery Plugins, main Jquery -->
+    <script src="./assets/js/plugins.js"></script>
+    <script src="./assets/js/main.js"></script>
+    <script src="Doc/js/config.js"></script>
+    <script src="Doc/js/index.js"></script>
+    <script>
+        function bootstrapHeader() {
+            fetch('header.html')
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById('header').innerHTML = data;
+                    const authPromise = window.checkAuthStatus ? window.checkAuthStatus() : Promise.resolve();
+                    return authPromise.then(() => {
+                        setTimeout(function () {
+                            if (window.jQuery && window.jQuery.fn && window.jQuery.fn.slicknav) {
+                                window.jQuery('ul#navigation').slicknav({
+                                    prependTo: '.mobile_menu',
+                                    closedSymbol: '+',
+                                    openedSymbol: '-'
+                                });
+                            }
+                        }, 50);
+                    });
+                });
+        }
+        bootstrapHeader();
+    </script>
+    <script>
+        fetch('footer.html')
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('footer').innerHTML = data;
+            });
+    </script>
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const categoryId = params.get("category");
+        const featuredType = params.get("type");
+        const searchQuery = params.get("query");
+        const searchLocation = params.get("location");
+
+        if (featuredType) {
+            loadServicesForFeaturedCategory(featuredType, searchQuery);
+        } else if (categoryId) {
+            const searchFilters = (searchQuery || searchLocation) ? { query: searchQuery || "", location: searchLocation || "" } : null;
+            loadServices(categoryId, 1, 6, searchFilters);
+            loadTotalListings(categoryId);
+        } else {
+            const searchFilters = (searchQuery || searchLocation) ? { query: searchQuery || "", location: searchLocation || "" } : null;
+            loadServices("all", 1, 6, searchFilters);
+        }
+    </script>
+</body>
+
+</html>

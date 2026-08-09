@@ -1,0 +1,204 @@
+<!doctype html>
+<html class="no-js" lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>My Profile | Skill Link</title>
+    <link rel="shortcut icon" type="image/x-icon" href="assets/img/favicon.ico">
+    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/css/themify-icons.css">
+    <link rel="stylesheet" href="assets/css/slicknav.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <style>
+        .profile-area { padding: 105px 0; background: #f8f9fc; }
+        .profile-card { padding: 32px; background: #fff; box-shadow: 0 8px 24px rgba(0,0,0,.06); margin-bottom: 28px; }
+        .profile-card h3 { font-size: 23px; margin-bottom: 22px; }
+        .profile-card .form-control { margin-bottom: 16px; min-height: 48px; }
+        .profile-card textarea.form-control { min-height: 130px; }
+        .service-card { border: 1px solid #e7e7e7; padding: 20px; margin-bottom: 14px; }
+        .service-card h4 { font-size: 18px; margin-bottom: 8px; }
+        .profile-note { padding: 16px; background: #fff3cd; color: #765c0b; }
+        .provider-registration { background: #fff; }
+        .registration-service { padding: 18px; margin: 16px 0; border: 1px solid #e7e7e7; background: #fafbff; }
+        .registration-service__heading { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .registration-service__heading h4 { margin: 0; font-size: 17px; }
+        .remove-registration-service { border: 0; background: #f8d7da; color: #721c24; padding: 6px 10px; cursor: pointer; }
+        .success { color: #155724; } .error { color: #721c24; }
+        .delete-button { background: #a71d2a; border-color: #a71d2a; }
+    </style>
+</head>
+<body>
+    <div id="header"></div>
+    <main>
+        <div class="hero-area2 slider-height2 hero-overly2 d-flex align-items-center"><div class="container"><div class="hero-cap text-center pt-50"><h2>My Profile</h2></div></div></div>
+        <section class="profile-area"><div class="container">
+            <div class="row"><div class="col-lg-4"><div class="profile-card">
+                <h3>Account</h3><p id="accountName"></p><p id="accountEmail"></p>
+                <button id="logoutButton" class="button button-contactForm boxed-btn">Sign out</button>
+            </div></div>
+            <div class="col-lg-8"><div id="noProvider" class="profile-card provider-registration" hidden>
+                <h3>Become a provider</h3>
+                <p>Create your provider profile here. It will be linked only to your signed-in account.</p>
+                <form id="becomeProviderForm">
+                    <div class="row"><div class="col-md-6"><input id="registration_business_name" class="form-control" required placeholder="Business name"></div><div class="col-md-6"><input id="registration_phone" class="form-control" required placeholder="Phone number"></div></div>
+                    <div class="row mt-3"><div class="col-md-6"><input id="registration_website" class="form-control" placeholder="Website (optional)"></div><div class="col-md-6"><input id="registration_linkedin_url" class="form-control" placeholder="LinkedIn URL (optional)"></div></div>
+                    <h4 class="mt-3">Your services</h4><div id="registrationServices"></div>
+                    <button id="addRegistrationService" class="button button-contactForm boxed-btn" type="button">Add another service</button>
+                    <h4 class="mt-4">Business location</h4>
+                    <div class="row"><div class="col-md-4"><input id="registration_area" class="form-control" placeholder="Area (optional)"></div><div class="col-md-4"><input id="registration_city" class="form-control" required placeholder="City"></div><div class="col-md-4"><input id="registration_state" class="form-control" required placeholder="State"></div></div>
+                    <input id="registration_address" class="form-control" placeholder="Full address (optional)">
+                    <div class="row"><div class="col-md-6"><input id="registration_latitude" type="number" step="any" class="form-control" placeholder="Latitude (optional)"></div><div class="col-md-6"><input id="registration_longitude" type="number" step="any" class="form-control" placeholder="Longitude (optional)"></div></div>
+                    <button id="becomeProviderSubmit" class="button button-contactForm boxed-btn" type="submit">Create provider profile</button><span id="registrationMessage" class="ml-3" role="alert"></span>
+                </form>
+            </div>
+            <div id="providerContent" hidden>
+                <div class="profile-card"><h3>Provider status</h3>
+                    <p id="providerStatus"></p>
+                    <p id="providerCreatedAt" class="text-muted"></p>
+                </div>
+                <div class="profile-card"><h3>Provider details</h3>
+                    <form id="providerForm">
+                        <div class="row"><div class="col-md-6"><input id="business_name" class="form-control" required placeholder="Business name"></div><div class="col-md-6"><input id="phone" class="form-control" required placeholder="Phone"></div></div>
+                        <div class="row mt-3"><div class="col-md-6"><input id="website" type="url" class="form-control" placeholder="Website (optional)"></div><div class="col-md-6"><input id="linkedin_url" type="url" class="form-control" placeholder="LinkedIn URL (optional)"></div></div>
+                        <input id="provider_email" type="email" class="form-control" placeholder="Business email">
+                        <input id="logo_url" type="url" class="form-control" placeholder="Logo image URL (optional)">
+                        <input id="cover_image" type="url" class="form-control" placeholder="Cover image URL (optional)">
+                        <textarea id="about" class="form-control" placeholder="Tell customers about your business"></textarea>
+                        <button class="button button-contactForm boxed-btn" type="submit">Save profile</button>
+                        <span id="profileMessage" class="ml-3" role="alert"></span>
+                    </form>
+                </div>
+                <div class="profile-card"><h3>Services</h3><div id="servicesList"></div></div>
+                <div class="profile-card"><h3>Add a service</h3>
+                    <form id="serviceForm"><div class="row"><div class="col-md-7"><input id="service_title" class="form-control" required placeholder="Service title"></div><div class="col-md-5"><select id="category_id" class="form-control" required><option value="">Choose category</option></select></div></div>
+                        <input id="service_price" class="form-control" placeholder="Price (optional)"><input id="service_image_url" class="form-control" placeholder="Image URL (optional)">
+                        <textarea id="service_description" class="form-control" required placeholder="Describe this service"></textarea>
+                        <button class="button button-contactForm boxed-btn" type="submit">Add service</button><span id="serviceMessage" class="ml-3" role="alert"></span>
+                    </form>
+                </div>
+                <div class="profile-card"><h3>Provider account</h3><p>Deleting your provider profile also removes its services. Your user account will remain available.</p><button id="deleteProviderButton" class="button button-contactForm boxed-btn delete-button" type="button">Delete provider profile</button></div>
+            </div></div></div>
+        </div></section>
+    </main>
+    <div id="footer"></div>
+    <script src="./assets/js/vendor/jquery-1.12.4.min.js"></script>
+    <script src="./assets/js/bootstrap.min.js"></script>
+    <script src="./assets/js/jquery.slicknav.min.js"></script>
+    <script src="./assets/js/main.js"></script>
+    <script src="./Doc/js/config.js"></script>
+    <script src="./Doc/js/index.js"></script>
+    <script>
+        function bootstrapHeader() {
+            fetch('header.html').then(r => r.text()).then(html => {
+                document.getElementById('header').innerHTML = html;
+                const authPromise = window.checkAuthStatus ? window.checkAuthStatus() : Promise.resolve();
+                return authPromise.then(() => {
+                    setTimeout(function () {
+                        if (window.jQuery && window.jQuery.fn && window.jQuery.fn.slicknav) {
+                            window.jQuery('ul#navigation').slicknav({
+                                prependTo: '.mobile_menu',
+                                closedSymbol: '+',
+                                openedSymbol: '-'
+                            });
+                        }
+                    }, 50);
+                });
+            });
+            fetch('footer.html').then(r => r.text()).then(html => document.getElementById('footer').innerHTML = html);
+        }
+        bootstrapHeader();
+    </script>
+    <script>
+        const api = window.CONFIG.API_URL + '/api/v1';
+        const escapeHtml = value => { const node = document.createElement('div'); node.textContent = value || ''; return node.innerHTML; };
+        const request = async (url, options = {}) => {
+            const response = await fetch(api + url, { credentials: 'include', ...options });
+            const data = response.status === 204 ? {} : await response.json();
+            if (!response.ok) throw new Error(data.detail || 'Request failed.');
+            return data;
+        };
+        let provider;
+        let categories = [];
+        function message(id, text, type = 'success') { const element = document.getElementById(id); element.textContent = text; element.className = type; }
+        const registrationValue = id => document.getElementById(id).value.trim();
+        function registrationCategoryOptions() {
+            return '<option value="">Choose category</option>' + categories.map(category => `<option value="${category.id}">${escapeHtml(category.name)}</option>`).join('');
+        }
+        function addRegistrationService() {
+            const entry = document.createElement('div');
+            entry.className = 'registration-service';
+            entry.innerHTML = `<div class="registration-service__heading"><h4>Service</h4><button type="button" class="remove-registration-service">Remove</button></div><div class="row"><div class="col-md-7"><input class="form-control registration-service-title" required placeholder="Service title"></div><div class="col-md-5"><select class="form-control registration-service-category" required>${registrationCategoryOptions()}</select></div></div><input class="form-control registration-service-price" placeholder="Price (optional)"><input class="form-control registration-service-image" placeholder="Image URL (optional)"><textarea class="form-control registration-service-description" required placeholder="Describe this service"></textarea>`;
+            entry.querySelector('.remove-registration-service').addEventListener('click', () => { if (document.querySelectorAll('.registration-service').length > 1) entry.remove(); });
+            document.getElementById('registrationServices').appendChild(entry);
+        }
+        function refreshRegistrationCategories() {
+            document.querySelectorAll('.registration-service-category').forEach(select => {
+                const selected = select.value;
+                select.innerHTML = registrationCategoryOptions();
+                select.value = selected;
+            });
+        }
+        function showServices(services) {
+            document.getElementById('servicesList').innerHTML = services.length ? services.map(service => `<div class="service-card"><button class="button button-contactForm boxed-btn delete-button float-right" data-id="${service.id}">Delete</button><h4>${escapeHtml(service.title)}</h4><p>${escapeHtml(service.description)}</p><small>${escapeHtml(service.category_name || '')} ${service.price ? '• ₦' + escapeHtml(service.price) : ''}</small></div>`).join('') : '<p>No services yet.</p>';
+            document.querySelectorAll('[data-id]').forEach(button => button.addEventListener('click', async () => { if (!confirm('Delete this service?')) return; try { await request(`/providers/me/services/${button.dataset.id}`, { method: 'DELETE' }); loadProfile(); } catch (error) { message('serviceMessage', error.message, 'error'); } }));
+        }
+        async function loadProfile() {
+            try {
+                const account = await request('/auth/me');
+                document.getElementById('accountName').textContent = account.user.username;
+                document.getElementById('accountEmail').textContent = account.user.email;
+                const data = await request('/providers/me'); provider = data.provider;
+                if (!provider) {
+                    document.getElementById('noProvider').hidden = false;
+                    document.getElementById('providerContent').hidden = true;
+                    return;
+                }
+                document.getElementById('noProvider').hidden = true;
+                document.getElementById('providerContent').hidden = false;
+                document.getElementById('providerStatus').textContent = 'Provider profile active.';
+                document.getElementById('providerCreatedAt').textContent = provider.created_at ? `Joined provider network on ${new Date(provider.created_at).toLocaleDateString()}` : '';
+                ['business_name','phone','website','linkedin_url','about','logo_url','cover_image'].forEach(key => document.getElementById(key).value = provider[key] || '');
+                document.getElementById('provider_email').value = provider.email || account.user.email;
+                showServices(data.services);
+            } catch (error) { window.location.href = 'login.html'; }
+        }
+        document.getElementById('providerForm').addEventListener('submit', async event => { event.preventDefault(); try { await request('/providers/me', { method: 'PUT', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ business_name: business_name.value, phone: phone.value, website: website.value || null, linkedin_url: linkedin_url.value || null, about: about.value || null, logo_url: logo_url.value || null, cover_image: cover_image.value || null, email: provider_email.value || null }) }); message('profileMessage', 'Saved.'); } catch (error) { message('profileMessage', error.message, 'error'); } });
+        document.getElementById('addRegistrationService').addEventListener('click', addRegistrationService);
+        document.getElementById('becomeProviderForm').addEventListener('submit', async event => {
+            event.preventDefault();
+            const submit = document.getElementById('becomeProviderSubmit');
+            const services = Array.from(document.querySelectorAll('.registration-service')).map(entry => ({
+                category_id: Number(entry.querySelector('.registration-service-category').value),
+                service_title: entry.querySelector('.registration-service-title').value.trim(),
+                description: entry.querySelector('.registration-service-description').value.trim(),
+                price: entry.querySelector('.registration-service-price').value.trim() || null,
+                image_url: entry.querySelector('.registration-service-image').value.trim() || null
+            }));
+            const numberOrNull = id => registrationValue(id) ? Number(registrationValue(id)) : null;
+            const payload = {
+                business_name: registrationValue('registration_business_name'),
+                phone: registrationValue('registration_phone'),
+                website: registrationValue('registration_website') || null,
+                linkedin_url: registrationValue('registration_linkedin_url') || null,
+                services,
+                area: registrationValue('registration_area') || null,
+                city: registrationValue('registration_city'),
+                state: registrationValue('registration_state'),
+                address: registrationValue('registration_address') || null,
+                latitude: numberOrNull('registration_latitude'),
+                longitude: numberOrNull('registration_longitude')
+            };
+            submit.disabled = true; submit.textContent = 'Creating...';
+            try { await request('/providers', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(payload) }); message('registrationMessage', 'Provider profile created.'); event.target.reset(); document.getElementById('registrationServices').innerHTML = ''; addRegistrationService(); await loadProfile(); }
+            catch (error) { message('registrationMessage', error.message, 'error'); }
+            finally { submit.disabled = false; submit.textContent = 'Create provider profile'; }
+        });
+        document.getElementById('serviceForm').addEventListener('submit', async event => { event.preventDefault(); try { await request('/providers/me/services', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ category_id: Number(category_id.value), service_title: service_title.value, description: service_description.value, price: service_price.value || null, image_url: service_image_url.value || null }) }); event.target.reset(); message('serviceMessage', 'Service added.'); loadProfile(); } catch (error) { message('serviceMessage', error.message, 'error'); } });
+        document.getElementById('logoutButton').addEventListener('click', async () => { await request('/auth/logout', { method: 'POST' }); window.location.href = 'index.html'; });
+        document.getElementById('deleteProviderButton').addEventListener('click', async () => { if (!confirm('Delete your provider profile and every service? This cannot be undone.')) return; try { await request(`/providers/${provider.id}`, { method: 'DELETE' }); window.location.reload(); } catch (error) { message('profileMessage', error.message, 'error'); } });
+        fetch(api + '/categories?type=None').then(r => { if (!r.ok) throw new Error('Unable to load categories.'); return r.json(); }).then(data => { categories = data.categories || []; category_id.innerHTML = registrationCategoryOptions(); refreshRegistrationCategories(); }).catch(error => message('registrationMessage', error.message, 'error'));
+        addRegistrationService();
+        loadProfile();
+    </script>
+</body>
+</html>
