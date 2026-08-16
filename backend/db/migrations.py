@@ -1,4 +1,4 @@
-"""Small, idempotent SQLite upgrades for installations created before profile support."""
+"""Small, idempotent schema upgrades for SQLite and PostgreSQL installations."""
 from sqlalchemy import inspect, text
 
 from db.base import Base
@@ -13,14 +13,14 @@ PROVIDER_COLUMNS = {
     "logo_url": "VARCHAR",
     "cover_image": "VARCHAR",
     "email": "VARCHAR",
-    "is_imported": "BOOLEAN NOT NULL DEFAULT 0",
+    "is_imported": "BOOLEAN NOT NULL DEFAULT false",
     "imported_from": "VARCHAR",
-    "verified": "BOOLEAN NOT NULL DEFAULT 0",
-    "created_at": "DATETIME",
+    "verified": "BOOLEAN NOT NULL DEFAULT false",
+    "created_at": "TIMESTAMP",
 }
 
 USER_COLUMNS = {
-    "is_admin": "BOOLEAN NOT NULL DEFAULT 0",
+    "is_admin": "BOOLEAN NOT NULL DEFAULT false",
 }
 
 

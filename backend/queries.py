@@ -1,19 +1,22 @@
 import os
 import sys
 import pandas as pd
-import sqlite3
 import re
 
 BACKEND_DIR = os.path.abspath(os.path.dirname(__file__))
 if BACKEND_DIR not in sys.path:
     sys.path.insert(0, BACKEND_DIR)
 
-from db.session import DB_PATH
+from db.session import DB_PATH, engine
+from sqlalchemy import create_engine, text
 
 
 def get_connection():
-    conn = sqlite3.connect(str(DB_PATH))
-    return conn
+    """Return a connection for whichever database DATABASE_URL selects."""
+    # Preserve the configurable SQLite path used by the legacy test suite.
+    if engine.dialect.name == "sqlite":
+        return create_engine(f"sqlite:///{DB_PATH}").connect()
+    return engine.connect()
 
 
 def _clean_records(records):
@@ -43,21 +46,28 @@ def _format_display_name(value):
 
 def _build_search_conditions(query=None, location=None):
     conditions = []
-    params = []
+    params = {}
+    parameter_number = 0
 
     if query:
         query_terms = [term.strip().lower() for term in re.split(r"\s+", query) if term.strip()]
         if query_terms:
             search_field = "LOWER(COALESCE(s.title, '') || ' ' || COALESCE(s.description, '') || ' ' || COALESCE(p.business_name, '') || ' ' || COALESCE(c.name, '') || ' ' || COALESCE(l.area, '') || ' ' || COALESCE(l.city, '') || ' ' || COALESCE(l.state, '') || ' ' || COALESCE(l.address, ''))"
-            conditions.extend([f"{search_field} LIKE ?" for _ in query_terms])
-            params.extend([f"%{term}%" for term in query_terms])
+            for term in query_terms:
+                parameter_name = f"search_term_{parameter_number}"
+                conditions.append(f"{search_field} LIKE :{parameter_name}")
+                params[parameter_name] = f"%{term}%"
+                parameter_number += 1
 
     if location:
         location_terms = [term.strip().lower() for term in re.split(r"\s+", location) if term.strip()]
         if location_terms:
             location_field = "LOWER(COALESCE(l.area, '') || ' ' || COALESCE(l.city, '') || ' ' || COALESCE(l.state, '') || ' ' || COALESCE(l.address, ''))"
-            conditions.extend([f"{location_field} LIKE ?" for _ in location_terms])
-            params.extend([f"%{term}%" for term in location_terms])
+            for term in location_terms:
+                parameter_name = f"location_term_{parameter_number}"
+                conditions.append(f"{location_field} LIKE :{parameter_name}")
+                params[parameter_name] = f"%{term}%"
+                parameter_number += 1
 
     return conditions, params
 
@@ -66,12 +76,12 @@ def get_provider_average_rating(provider_id):
     conn = get_connection()
     query = """
     SELECT
-        COALESCE(ROUND(AVG(r.score), 1), 0) AS average_rating,
+        COALESCE(ROUND(CAST(AVG(r.score) AS NUMERIC), 1), 0) AS average_rating,
         COUNT(r.id) AS total_ratings
     FROM ratings r
-    WHERE r.provider_id = ?
+    WHERE r.provider_id = :provider_id
     """
-    df = pd.read_sql_query(query, conn, params=[provider_id])
+    df = pd.read_sql_query(text(query), conn, params={"provider_id": provider_id})
     conn.close()
     result = _clean_records(df.to_dict(orient="records"))
     return result[0] if result else {"average_rating": 0, "total_ratings": 0}
@@ -87,10 +97,10 @@ def get_all_ratings_for_provider(provider_id):
         r.created_at
     FROM ratings r
     LEFT JOIN users u ON r.user_id = u.id
-    WHERE r.provider_id = ?
+    WHERE r.provider_id = :provider_id
     ORDER BY r.created_at DESC
     """
-    df = pd.read_sql_query(query, conn, params=[provider_id])
+    df = pd.read_sql_query(text(query), conn, params={"provider_id": provider_id})
     conn.close()
     return _clean_records(df.to_dict(orient="records"))
 
@@ -103,7 +113,7 @@ def top_six_services():
             c.name,
             c.image_url,
             COUNT(DISTINCT s.id) AS service_count,
-            COALESCE(ROUND(AVG(r.score), 1), 0) AS average_rating,
+            COALESCE(ROUND(CAST(AVG(r.score) AS NUMERIC), 1), 0) AS average_rating,
             COUNT(DISTINCT r.id) AS total_ratings
         FROM categories c
         JOIN services s
@@ -116,7 +126,7 @@ def top_six_services():
         ORDER BY service_count DESC
         LIMIT 6
     """
-    df = pd.read_sql_query(query, conn)
+    df = pd.read_sql_query(text(query), conn)
     conn.close()
     return _clean_records(df.to_dict(orient="records"))
 
@@ -141,12 +151,12 @@ def categories(type=None):
         type = None  # Reset type if it doesn't match any category
     
     query += """
-    GROUP BY name
+    GROUP BY id
     ORDER BY demand DESC
     """
     
         
-    df = pd.read_sql_query(query, conn)
+    df = pd.read_sql_query(text(query), conn)
     conn.close()
     return _clean_records(df.to_dict(orient="records"))
 
@@ -174,7 +184,7 @@ def services_display(category_id, page=None, page_size=None, query=None, locatio
         p.business_name AS provider_name,
         p.verified AS provider_verified,
         c.name AS category_name,
-        COALESCE(ROUND(AVG(r.score), 1), 0) AS average_rating,
+        COALESCE(ROUND(CAST(AVG(r.score) AS NUMERIC), 1), 0) AS average_rating,
         COUNT(DISTINCT r.id) AS total_ratings
     FROM services s
     JOIN unique_services u ON s.id = u.min_id
@@ -182,20 +192,20 @@ def services_display(category_id, page=None, page_size=None, query=None, locatio
     LEFT JOIN providers p ON s.provider_id = p.id
     LEFT JOIN categories c ON s.category_id = c.id
     LEFT JOIN ratings r ON p.id = r.provider_id
-    WHERE s.category_id = ?
+    WHERE s.category_id = :category_id
     """
-    params = [category_id]
+    params = {"category_id": category_id}
     conditions, filter_params = _build_search_conditions(query, location)
     if conditions:
         base_query += "\n    AND " + "\n    AND ".join(conditions)
-        params.extend(filter_params)
-    base_query += "\n    GROUP BY s.id, s.title, s.image_url, s.price, s.description, s.provider_id, l.area, l.city, l.state, l.address, p.phone, p.business_name, c.name"
-    base_query += "\n    ORDER BY CASE WHEN COUNT(DISTINCT r.id) = 0 THEN 1 ELSE 0 END ASC, average_rating DESC, total_ratings DESC, s.title COLLATE NOCASE ASC, s.id ASC"
+        params.update(filter_params)
+    base_query += "\n    GROUP BY s.id, l.id, p.id, c.id"
+    base_query += "\n    ORDER BY CASE WHEN COUNT(DISTINCT r.id) = 0 THEN 1 ELSE 0 END ASC, average_rating DESC, total_ratings DESC, LOWER(s.title) ASC, s.id ASC"
 
     if page is not None and page_size is not None:
-        base_query += "\n    LIMIT ? OFFSET ?"
-        params.extend([page_size, (page - 1) * page_size])
-    df = pd.read_sql_query(base_query, conn, params=params)
+        base_query += "\n    LIMIT :limit OFFSET :offset"
+        params.update({"limit": page_size, "offset": (page - 1) * page_size})
+    df = pd.read_sql_query(text(base_query), conn, params=params)
     conn.close()
     records = _clean_records(df.to_dict(orient="records"))
     for record in records:
@@ -223,14 +233,14 @@ def total_services_count(category_id, query=None, location=None):
     LEFT JOIN locations l ON s.location_id = l.id
     LEFT JOIN providers p ON s.provider_id = p.id
     LEFT JOIN categories c ON s.category_id = c.id
-    WHERE s.category_id = ?
+    WHERE s.category_id = :category_id
     """
-    params = [category_id]
+    params = {"category_id": category_id}
     conditions, filter_params = _build_search_conditions(query, location)
     if conditions:
         base_query += "\n    AND " + "\n    AND ".join(conditions)
-        params.extend(filter_params)
-    df = pd.read_sql_query(base_query, conn, params=params)
+        params.update(filter_params)
+    df = pd.read_sql_query(text(base_query), conn, params=params)
     conn.close()
     result = df.to_dict(orient="records")
     return result[0]["total"] if result else 0
@@ -257,17 +267,17 @@ def provider_info(provider_id):
         c.name AS category_name,
         l.latitude AS latitude,
         l.longitude AS longitude,
-        COALESCE(ROUND(AVG(r.score), 1), 0) AS average_rating,
+        COALESCE(ROUND(CAST(AVG(r.score) AS NUMERIC), 1), 0) AS average_rating,
         COUNT(DISTINCT r.id) AS total_ratings
     FROM services s
     LEFT JOIN locations l ON s.location_id = l.id
     LEFT JOIN providers p ON s.provider_id = p.id
     LEFT JOIN categories c ON s.category_id = c.id
     LEFT JOIN ratings r ON p.id = r.provider_id
-    WHERE s.provider_id = ?
-    GROUP BY s.id, s.title, s.image_url, s.description, s.price, l.address, l.latitude, l.longitude, p.phone, p.email, p.website, p.linkedin_url, p.business_name, p.is_imported, p.imported_from, c.name;
+    WHERE s.provider_id = :provider_id
+    GROUP BY s.id, l.id, p.id, c.id;
     """
-    df = pd.read_sql_query(query, conn, params=[provider_id])
+    df = pd.read_sql_query(text(query), conn, params={"provider_id": provider_id})
     conn.close()
     records = _clean_records(df.to_dict(orient="records"))
     for record in records:
@@ -289,25 +299,26 @@ def check_other_providers(provider_id, page=1, page_size=3):
     category_query = """
     SELECT DISTINCT category_id
     FROM services
-    WHERE provider_id = ?
+    WHERE provider_id = :provider_id
     """
-    category_df = pd.read_sql_query(category_query, conn, params=[provider_id])
+    category_df = pd.read_sql_query(text(category_query), conn, params={"provider_id": provider_id})
     categories = category_df["category_id"].dropna().astype(int).tolist()
 
     if not categories:
         conn.close()
         return []
 
-    placeholders = ",".join(["?" for _ in categories])
+    category_params = {f"category_id_{index}": category_id for index, category_id in enumerate(categories)}
+    placeholders = ",".join(f":{parameter_name}" for parameter_name in category_params)
     query = f"""
     WITH related_providers AS (
         SELECT provider_id, MIN(id) AS min_service_id
         FROM services
         WHERE category_id IN ({placeholders})
-          AND provider_id != ?
+          AND provider_id != :provider_id
         GROUP BY provider_id
         ORDER BY provider_id
-        LIMIT ? OFFSET ?
+        LIMIT :limit OFFSET :offset
     )
     SELECT
         p.id,
@@ -317,7 +328,7 @@ def check_other_providers(provider_id, page=1, page_size=3):
         s.price,
         l.address AS location_name,
         p.phone AS provider_phone,
-        COALESCE(ROUND(AVG(r.score), 1), 0) AS average_rating,
+        COALESCE(ROUND(CAST(AVG(r.score) AS NUMERIC), 1), 0) AS average_rating,
         COUNT(DISTINCT r.id) AS total_ratings
     FROM related_providers rp
     JOIN services s
@@ -328,11 +339,11 @@ def check_other_providers(provider_id, page=1, page_size=3):
         ON s.location_id = l.id
     LEFT JOIN ratings r
         ON p.id = r.provider_id
-    GROUP BY p.id, p.business_name, s.image_url, s.description, s.price, l.address, p.phone
+    GROUP BY p.id, s.id, l.id
     """
 
-    params = categories + [provider_id, page_size, (page - 1) * page_size]
-    df = pd.read_sql_query(query, conn, params=params)
+    params = category_params | {"provider_id": provider_id, "limit": page_size, "offset": (page - 1) * page_size}
+    df = pd.read_sql_query(text(query), conn, params=params)
     conn.close()
     return _clean_records(df.to_dict(orient="records"))
 
@@ -359,7 +370,7 @@ def all_providers_display(page=None, page_size=None, query=None, location=None):
         p.business_name AS provider_name,
         p.verified AS provider_verified,
         c.name AS category_name,
-        COALESCE(ROUND(AVG(r.score), 1), 0) AS average_rating,
+        COALESCE(ROUND(CAST(AVG(r.score) AS NUMERIC), 1), 0) AS average_rating,
         COUNT(DISTINCT r.id) AS total_ratings
     FROM services s
     JOIN unique_services u ON s.id = u.min_id
@@ -369,18 +380,18 @@ def all_providers_display(page=None, page_size=None, query=None, location=None):
     LEFT JOIN ratings r ON p.id = r.provider_id
     WHERE 1 = 1
     """
-    params = []
+    params = {}
     conditions, filter_params = _build_search_conditions(query, location)
     if conditions:
         base_query += "\n    AND " + "\n    AND ".join(conditions)
-        params.extend(filter_params)
-    base_query += "\n    GROUP BY s.id, s.title, s.image_url, s.price, s.description, s.provider_id, l.area, l.city, l.state, l.address, p.phone, p.business_name, c.name"
-    base_query += "\n    ORDER BY CASE WHEN COUNT(DISTINCT r.id) = 0 THEN 1 ELSE 0 END ASC, average_rating DESC, total_ratings DESC, s.title COLLATE NOCASE ASC, s.id ASC"
+        params.update(filter_params)
+    base_query += "\n    GROUP BY s.id, l.id, p.id, c.id"
+    base_query += "\n    ORDER BY CASE WHEN COUNT(DISTINCT r.id) = 0 THEN 1 ELSE 0 END ASC, average_rating DESC, total_ratings DESC, LOWER(s.title) ASC, s.id ASC"
 
     if page is not None and page_size is not None:
-        base_query += "\n    LIMIT ? OFFSET ?"
-        params.extend([page_size, (page - 1) * page_size])
-    df = pd.read_sql_query(base_query, conn, params=params)
+        base_query += "\n    LIMIT :limit OFFSET :offset"
+        params.update({"limit": page_size, "offset": (page - 1) * page_size})
+    df = pd.read_sql_query(text(base_query), conn, params=params)
     conn.close()
     records = _clean_records(df.to_dict(orient="records"))
     for record in records:
@@ -410,12 +421,12 @@ def total_all_services_count(query=None, location=None):
     LEFT JOIN categories c ON s.category_id = c.id
     WHERE 1 = 1
     """
-    params = []
+    params = {}
     conditions, filter_params = _build_search_conditions(query, location)
     if conditions:
         base_query += "\n    AND " + "\n    AND ".join(conditions)
-        params.extend(filter_params)
-    df = pd.read_sql_query(base_query, conn, params=params)
+        params.update(filter_params)
+    df = pd.read_sql_query(text(base_query), conn, params=params)
     conn.close()
     result = df.to_dict(orient="records")
     return result[0]["total"] if result else 0

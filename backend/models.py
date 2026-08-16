@@ -87,7 +87,7 @@ class Provider(Base):
     is_imported = Column(Boolean, nullable=False, default=False)
     imported_from = Column(String, nullable=True)
     verified = Column(Boolean, nullable=False, default=False)
-    created_at = Column(DateTime, nullable=False, default=lambda: datetime.now(timezone.utc))
+    created_at = Column(DateTime(timezone=True), nullable=False, default=lambda: datetime.now(timezone.utc))
 
     user = relationship("User", back_populates="provider")
 
@@ -123,7 +123,7 @@ class Rating(Base):
     provider_id = Column(Integer, ForeignKey("providers.id"), nullable=False, index=True)
     score = Column(Integer, nullable=False)  # 1-5 stars
     comment = Column(Text, nullable=True)
-    created_at = Column(DateTime, nullable=False, default=lambda: datetime.now(timezone.utc))
+    created_at = Column(DateTime(timezone=True), nullable=False, default=lambda: datetime.now(timezone.utc))
 
     user = relationship("User")
     provider = relationship("Provider", back_populates="ratings", foreign_keys=[provider_id])
@@ -136,8 +136,8 @@ class ClaimRequest(Base):
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
     provider_id = Column(Integer, ForeignKey("providers.id"), nullable=False, index=True)
     status = Column(String, nullable=False, default="pending")
-    created_at = Column(DateTime, nullable=False, default=lambda: datetime.now(timezone.utc))
-    updated_at = Column(DateTime, nullable=False, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
+    created_at = Column(DateTime(timezone=True), nullable=False, default=lambda: datetime.now(timezone.utc))
+    updated_at = Column(DateTime(timezone=True), nullable=False, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
 
     user = relationship("User")
     provider = relationship("Provider")
@@ -149,7 +149,7 @@ class AuthSession(Base):
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
     token_hash = Column(String, nullable=False, unique=True, index=True)
-    expires_at = Column(DateTime, nullable=False)
-    created_at = Column(DateTime, nullable=False, default=lambda: datetime.now(timezone.utc))
+    expires_at = Column(DateTime(timezone=True), nullable=False)
+    created_at = Column(DateTime(timezone=True), nullable=False, default=lambda: datetime.now(timezone.utc))
 
     user = relationship("User")

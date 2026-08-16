@@ -1,3 +1,5 @@
 window.CONFIG = {
-    API_URL: "http://192.168.0.101:8000"
+    // Keep API requests on the same host as the page so session cookies work
+    // whether the app is opened via localhost, 127.0.0.1, or a LAN address.
+    API_URL: window.location.origin
 };

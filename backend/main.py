@@ -7,8 +7,6 @@ BACKEND_DIR = os.path.abspath(os.path.dirname(__file__))
 if BACKEND_DIR not in sys.path:
     sys.path.insert(0, BACKEND_DIR)
 
-from datetime import datetime
-
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, HTMLResponse
@@ -18,6 +16,7 @@ from middleware.timer import timer_middleware
 from db.migrations import ensure_schema
 from db.session import SessionLocal, engine
 from models import AuthSession
+from security import session_has_expired
 
 ROOT_DIR = Path(__file__).resolve().parent.parent
 FRONTEND_DIR = ROOT_DIR / "frontend"
@@ -55,7 +54,7 @@ async def serve_header(request: Request):
         db = SessionLocal()
         try:
             session = db.query(AuthSession).filter(AuthSession.token_hash == hash_session_token(token)).first()
-            is_logged_in = session is not None and session.expires_at > datetime.utcnow()
+            is_logged_in = session is not None and not session_has_expired(session.expires_at)
         finally:
             db.close()
 

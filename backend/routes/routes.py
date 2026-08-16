@@ -5,7 +5,7 @@ BACKEND_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 if BACKEND_DIR not in sys.path:
     sys.path.insert(0, BACKEND_DIR)
 
-from datetime import datetime, timedelta
+from datetime import timedelta
 import re
 from typing import Optional
 
@@ -17,7 +17,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from db.session import SessionLocal
 from models import AuthSession, Category, ClaimRequest, Location, Provider, Service, User, Rating
 from queries import categories, services_display, top_six_services, total_services_count, total_all_services_count, provider_info, check_other_providers, all_providers_display, get_provider_average_rating, get_all_ratings_for_provider
-from security import hash_password, hash_session_token, new_session_token, verify_password
+from security import hash_password, hash_session_token, new_session_token, session_has_expired, utc_now, verify_password
 
 router = APIRouter(prefix="/api/v1", tags=["BACKEND_API v1"])
 
@@ -101,7 +101,7 @@ def _current_user(request: Request) -> User:
     db = SessionLocal()
     try:
         session = db.query(AuthSession).filter(AuthSession.token_hash == hash_session_token(token)).first()
-        if session is None or session.expires_at <= datetime.utcnow():
+        if session is None or session_has_expired(session.expires_at):
             if session is not None:
                 db.delete(session)
                 db.commit()
@@ -139,7 +139,7 @@ async def register_user(payload: RegisterRequest, response: Response):
         db.add(user)
         db.flush()
         token = new_session_token()
-        db.add(AuthSession(user_id=user.id, token_hash=hash_session_token(token), expires_at=datetime.utcnow() + timedelta(days=7)))
+        db.add(AuthSession(user_id=user.id, token_hash=hash_session_token(token), expires_at=utc_now() + timedelta(days=7)))
         db.commit()
         response.set_cookie("skill_link_session", token, httponly=True, samesite="lax", max_age=604800, path="/")
         return {"user": {"id": user.id, "username": user.username, "email": user.email}}
@@ -158,7 +158,7 @@ async def login_user(payload: LoginRequest, response: Response):
         if user is None or not verify_password(payload.password, user.password):
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid email or password.")
         token = new_session_token()
-        db.add(AuthSession(user_id=user.id, token_hash=hash_session_token(token), expires_at=datetime.utcnow() + timedelta(days=7)))
+        db.add(AuthSession(user_id=user.id, token_hash=hash_session_token(token), expires_at=utc_now() + timedelta(days=7)))
         db.commit()
         response.set_cookie("skill_link_session", token, httponly=True, samesite="lax", max_age=604800, path="/")
         return {"user": {"id": user.id, "username": user.username, "email": user.email}}
@@ -188,7 +188,7 @@ async def check_auth(request: Request):
     db = SessionLocal()
     try:
         session = db.query(AuthSession).filter(AuthSession.token_hash == hash_session_token(token)).first()
-        if session is None or session.expires_at <= datetime.utcnow():
+        if session is None or session_has_expired(session.expires_at):
             if session is not None:
                 db.delete(session)
                 db.commit()
@@ -434,7 +434,7 @@ async def admin_approve_claim_request(claim_request_id: int, user: User = Depend
         provider.verified = True
         provider.user_id = claim.user_id
         claim.status = "approved"
-        claim.updated_at = datetime.utcnow()
+        claim.updated_at = utc_now()
 
         db.query(ClaimRequest).filter(
             ClaimRequest.provider_id == provider.id,
@@ -442,7 +442,7 @@ async def admin_approve_claim_request(claim_request_id: int, user: User = Depend
             ClaimRequest.id != claim.id
         ).update({
             ClaimRequest.status: "rejected",
-            ClaimRequest.updated_at: datetime.utcnow()
+            ClaimRequest.updated_at: utc_now()
         }, synchronize_session=False)
 
         db.commit()
@@ -475,7 +475,7 @@ async def admin_reject_claim_request(claim_request_id: int, user: User = Depends
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Claim request has already been processed.")
 
         claim.status = "rejected"
-        claim.updated_at = datetime.utcnow()
+        claim.updated_at = utc_now()
         db.commit()
         db.refresh(claim)
         return {
@@ -941,7 +941,7 @@ async def create_rating(payload: RatingRequest, request: Request):
             AuthSession.token_hash == hash_session_token(token)
         ).first()
 
-        if not session or session.expires_at < datetime.utcnow():
+        if not session or session_has_expired(session.expires_at):
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Session expired"
