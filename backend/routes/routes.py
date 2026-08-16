@@ -20,6 +20,7 @@ from queries import categories, services_display, top_six_services, total_servic
 from security import hash_password, hash_session_token, new_session_token, session_has_expired, utc_now, verify_password
 
 router = APIRouter(prefix="/api/v1", tags=["BACKEND_API v1"])
+COOKIE_SECURE = os.getenv("COOKIE_SECURE", "false").strip().lower() == "true"
 
 
 class ProviderServiceRequest(BaseModel):
@@ -141,7 +142,7 @@ async def register_user(payload: RegisterRequest, response: Response):
         token = new_session_token()
         db.add(AuthSession(user_id=user.id, token_hash=hash_session_token(token), expires_at=utc_now() + timedelta(days=7)))
         db.commit()
-        response.set_cookie("skill_link_session", token, httponly=True, samesite="lax", max_age=604800, path="/")
+        response.set_cookie("skill_link_session", token, httponly=True, secure=COOKIE_SECURE, samesite="lax", max_age=604800, path="/")
         return {"user": {"id": user.id, "username": user.username, "email": user.email}}
     except HTTPException:
         db.rollback()
@@ -160,7 +161,7 @@ async def login_user(payload: LoginRequest, response: Response):
         token = new_session_token()
         db.add(AuthSession(user_id=user.id, token_hash=hash_session_token(token), expires_at=utc_now() + timedelta(days=7)))
         db.commit()
-        response.set_cookie("skill_link_session", token, httponly=True, samesite="lax", max_age=604800, path="/")
+        response.set_cookie("skill_link_session", token, httponly=True, secure=COOKIE_SECURE, samesite="lax", max_age=604800, path="/")
         return {"user": {"id": user.id, "username": user.username, "email": user.email}}
     finally:
         db.close()
